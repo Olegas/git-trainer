@@ -256,5 +256,51 @@ function Repo() {
         _idx = _.difference(_idx, _self._findDead());
     };
 
+    this.save = function(cb){
+        /*
+            .git
+               objects
+                  ...
+               HEAD
+               refs
+                  heads
+                     master
+                     ...
+                  tags
+        */
+        var objects = GitObject.getAll(),
+            fs = new zip.fs.FS(),
+            root = fs.root.addDirectory('git-trainer'),
+            dotGit = root.addDirectory('.git'),
+            obj = dotGit.addDirectory('objects'),
+            refs = dotGit.addDirectory('refs'),
+            heads = refs.addDirectory('heads'),
+            oDirs = {};
+
+        refs.addDirectory('tags');
+
+        Object.keys(objects).forEach(function (o) {
+           var prefix2 = o.substr(0, 2), name = o.substr(2);
+           var dir = oDirs[prefix2] || (oDirs[prefix2] = obj.addDirectory(prefix2));
+
+           dir.addBlob(name, mkBlob(objects[o]));
+        });
+
+        dotGit.addText('HEAD', 'ref: refs/heads/' + HEAD + "\n");
+
+        Object.keys(branches).forEach(function (branch) {
+           heads.addText(branch, branches[branch] + "\n");
+        });
+
+        fs.exportBlob(cb);
+    };
+
+    function mkBlob(data) {
+       var arr = new Uint8Array(data.split('').map(function (c) {
+          return c.charCodeAt(0);
+       }));
+       return new Blob([arr], { type: 'application/octet-stream' });
+    }
+
     return this;
 }
