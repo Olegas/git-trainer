@@ -6,6 +6,7 @@
   </head>
   <body>
     <input id="commandline" class="commandLine" spellcheck="false" autofocus="true" />
+    <a id="repoDown" href="#">Download Repository</a>
     <div class="demo"></div>
 
     <script src="libs/jquery-2.0.0.min.js"></script>
@@ -43,6 +44,27 @@
             $('#commandline').focus();
         });
 
+        $('#repoDown').click(function(e){
+            var downloadLink = this;
+            if(!downloadLink.download) {
+                saveRepo(myRepo, function(blob){
+                    var url = URL.createObjectURL(blob);
+                    var clickEvent = document.createEvent("MouseEvent");
+                    clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    downloadLink.href = url;
+                    downloadLink.download = "git-repo.zip";
+                    downloadLink.dispatchEvent(clickEvent);
+
+                    // Cleanup...
+                    setTimeout(function(){
+                        URL.revokeObjectURL(url);
+                        downloadLink.download = '';
+                    }, 5000);
+                });
+                e.preventDefault();
+                return false;
+            }
+        })
     </script>
   </body>
 </html>

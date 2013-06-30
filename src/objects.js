@@ -1,7 +1,7 @@
 var GitObject = {};
 var objects = {};
 
-function saveRepo(repo) {
+function saveRepo(repo, cb) {
    /*
       .git
          objects
@@ -37,9 +37,7 @@ function saveRepo(repo) {
       heads.addText(branch, branches[branch] + "\n");
    });
 
-   fs.exportBlob(function(blob){
-      location = URL.createObjectURL(blob);
-   })
+   fs.exportBlob(cb);
 
 }
 
@@ -48,12 +46,6 @@ function mkBlob(data) {
       return c.charCodeAt(0);
    }));
    return new Blob([arr], { type: 'application/octet-stream' });
-}
-
-function save(id) {
-   var o = objects[id];
-   location = URL.createObjectURL(mkBlob(o));
-   return id.substr(0, 2) + '/' + id.substr(2);
 }
 
 /**
@@ -81,7 +73,7 @@ GitObject.createCommit = function(cfg) {
    data = data.join('\n');
    obj = "commit " + data.length + "\0" + data;
    var sha = hex_sha1(obj);
-   console.log("COMMIT " + sha + " > " + obj);
+   // console.log("COMMIT " + sha + " > " + obj);
    obj = deflate(obj);
    objects[sha] = obj;
    return sha;
