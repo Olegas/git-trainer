@@ -91,7 +91,7 @@ function Graph(holder, w, h) {
             .enter().append("text")
                 .attr("class", 'nodeName')
                 .attr("data-name-oid", function(d){ return d.oid })
-                .text(function(d) { return d.oid });
+                .text(function(d) { return d.oid.substr(0, 7) });
 
         vis.selectAll("text.labels")
                 .data(nodes, function(d) {return d.oid})

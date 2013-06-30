@@ -12,7 +12,14 @@
     <script src="libs/underscore-min.js"></script>
     <script src="libs/d3.min.js"></script>
     <script src="libs/sha1.js"></script>
+    <script src="libs/zip/zip.js"></script>
+    <script src="libs/zip/zip-fs.js"></script>
+    <script>
+        zip.workerScriptsPath = "./libs/zip/";
+    </script>
+    <script src="libs/zip/deflate.js"></script>
 
+    <script src="src/objects.js"></script>
     <script src="src/repo.js"></script>
     <script src="src/graph.js"></script>
     <script src="src/command-line.js"></script>
@@ -22,7 +29,7 @@
         var myRepo = new Repo(),
             myGraph = new Graph('.demo', window.innerWidth, window.innerHeight-100),
             commanline = new CommandLine('#commandline');
-            myCommander = new gitCommander(myRepo),
+            myCommander = new gitCommander(myRepo);
 
 
         $('body').bind('command-entered', function(e) {
@@ -32,7 +39,7 @@
 
 
         $(document).on('dblclick', '.node', function(e) {
-            $('#commandline').val($('#commandline').val()+$(e.target).attr('data-oid'));
+            $('#commandline').val($('#commandline').val()+$(e.target).attr('data-oid').substr(0, 7));
             $('#commandline').focus();
         });
 

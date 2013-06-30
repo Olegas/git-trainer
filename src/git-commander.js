@@ -11,7 +11,9 @@ function gitCommander(repo) {
             },
 
             'add': function(options) {
-                repo.add();
+                var repoData = repo.getData();
+                var parent = repoData.branches[repoData.HEAD];
+                repo.add(parent ? [ parent ] : '');
             },
 
             'commit': function(options) {

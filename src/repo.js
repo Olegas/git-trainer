@@ -8,13 +8,31 @@ function Repo() {
 
         branches = {
             master: null
+        },
+
+        counter = {
+           master: 0
         };
 
     function _Node(parents) {
-        return {
-            oid: SHA1('salt'+Math.random()+(new Date()).valueOf()).substring(0,7),
-            parents: parents ? parents : [branches[HEAD], null]
-        };
+
+       counter[HEAD] = counter[HEAD] || 0;
+
+       var comment = (++counter[HEAD]) + "-th commit at " + HEAD;
+       var sha = GitObject.createCommit({
+          parents: parents,
+          comment: comment,
+          authorName: "John Doe",
+          authorEmail: 'john@doe.com',
+          tree: GitObject.createTree([
+             { name: 'file-at-' + HEAD, pointer: GitObject.createBlob(comment) }
+          ])
+       });
+
+       return {
+          oid: sha,
+          parents: parents ? parents : [branches[HEAD], null]
+       };
     }
 
     _self = this;
@@ -44,14 +62,16 @@ function Repo() {
     };
 
     this.revert = function(oid) {
+       // TODO pick actual
         _self.add();
         _self.commit();
-    }
+    };
 
     this.cherryPick = function(oid) {
+       // TODO pick actual
         _self.add();
         _self.commit();
-    }
+    };
 
 
     this.branch = function(name){
