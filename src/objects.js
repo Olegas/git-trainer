@@ -18,23 +18,30 @@
     */
    GitObject.createCommit = function (cfg) {
 
-      var data = [
+      var now = new Date(),
+          offset = now.getTimezoneOffset(),
+          data, obj, author, sha, ts;
+
+      data = [
          "tree " + cfg.tree
-      ], obj;
+      ];
 
       (cfg.parents || []).forEach(function (p) {
          data.push("parent " + p);
       });
 
-      var author = cfg.authorName + " <" + cfg.authorEmail + ">" + " " + (+new Date()) + " +0000";
+      ts = (+now/1000).toFixed(0) + ' ' +
+           (offset < 0 ? ((offset = -offset) && '+') : '-') +
+           pad((offset/60).toFixed(0)) + pad((offset%60).toFixed(0));
+
+      author = cfg.authorName + " <" + cfg.authorEmail + ">" + " " + ts;
       data.push("author " + author, "committer " + author, '', cfg.comment);
 
       data = data.join('\n');
       obj = "commit " + data.length + "\0" + data;
-      var sha = hex_sha1(obj);
-      // console.log("COMMIT " + sha + " > " + obj);
-      obj = deflate(obj);
-      objects[sha] = obj;
+      sha = hex_sha1(obj);
+      //console.log("COMMIT " + sha + " > " + obj);
+      objects[sha] = deflate(obj);
       return sha;
    };
 
@@ -131,6 +138,14 @@
       deflater.append(arr);
 
       return String.fromCharCode(0x78, 0x9C) + String.fromCharCode.apply(null, deflater.flush()) + String.fromCharCode.apply(null, bytes);
+   }
+
+   function pad(n) {
+      n = "" + n;
+      if(n.length < 2)
+         return "0" + n;
+      else
+         return n;
    }
 
    GitObject.getAll = function() {
