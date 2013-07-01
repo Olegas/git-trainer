@@ -83,8 +83,15 @@ function Repo() {
             return true;
         }
         if (args.length == 2) {
-            branches[args[0]] = args[1];
-            return true;
+            var shas = Object.keys(GitObject.getAll()).filter(function(k){
+               return k.indexOf(args[1]) === 0;
+            });
+            if(shas.length == 1) {
+               branches[args[0]] = shas[0];
+               return true;
+            } else {
+               return false;
+            }
         }
 
         return false;

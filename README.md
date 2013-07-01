@@ -9,6 +9,8 @@ git add
 git commit
 
 git branch BRANCH_NAME
+git branch BRANCH_NAME COMMIT_SHA
+git branch -d
 git checkout -b BRANCH_NAME
 git checkout BRANCH_NAME
 
